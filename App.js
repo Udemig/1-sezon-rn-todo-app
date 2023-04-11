@@ -28,7 +28,7 @@ function App() {
   return (
     <SafeAreaView>
       <View>
-        <Text>Todo App</Text>
+        <Text>Todo App week1</Text>
       </View>
       
     </SafeAreaView>
