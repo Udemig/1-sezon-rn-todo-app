@@ -1,12 +1,17 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, Alert} from 'react-native';
 
 import styles from './style';
 import {colors} from '../../utils/constants';
 
 import Icon from 'react-native-vector-icons/AntDesign';
+import EditModal from '../editModal';
 
 const Todo = ({todo = {}, todos = [], setTodos = () => {}}) => {
+  const [openModal, setOpenModal] = useState(false);
+  const [willEditText, setWillEditText] = useState(todo.text);
+  const [hasError, setHasError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const deleteTodo = () => {
     Alert.alert(
       'Silme İşlemi',
@@ -50,13 +55,41 @@ const Todo = ({todo = {}, todos = [], setTodos = () => {}}) => {
                 tempArr.push(newTodo);
               }
             }
-            console.log(tempArr)
+            console.log(tempArr);
             setTodos(tempArr);
           },
           style: 'destructive',
         },
       ],
     );
+  };
+
+  const editTodo = () => {
+    /* VALIDATION */
+    if (willEditText === '') {
+      setHasError(true);
+      setErrorMessage('* Text alanı boş bırakılamaz');
+      setTimeout(() => {
+        setHasError(false);
+        setErrorMessage('');
+      }, 2000);
+      return;
+    }
+    /* GUNCELLEME */
+    const tempArr = [];
+    for (let i = 0; i < todos.length; i++) {
+      if (todos[i].id !== todo.id) {
+        tempArr.push(todos[i]);
+      } else {
+        const updatedTodo = {
+          ...todo,
+          text: willEditText,
+        };
+        tempArr.push(updatedTodo);
+      }
+    }
+    setTodos(tempArr);
+    setOpenModal(false)
   };
   return (
     <View style={styles.todoWrapper}>
@@ -76,13 +109,22 @@ const Todo = ({todo = {}, todos = [], setTodos = () => {}}) => {
             color={colors.green}
           />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => setOpenModal(true)}>
           <Icon name="edit" size={25} color={colors.bgPrimary} />
         </TouchableOpacity>
         <TouchableOpacity onPress={deleteTodo}>
           <Icon name="closecircle" size={25} color={colors.danger} />
         </TouchableOpacity>
       </View>
+      <EditModal
+        willEditText={willEditText}
+        setWillEditText={setWillEditText}
+        visible={openModal}
+        closeModal={() => setOpenModal(false)}
+        onConfirm={editTodo}
+        hasError={hasError}
+        errorMessage={errorMessage}
+      />
     </View>
   );
 };

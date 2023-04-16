@@ -4,5 +4,6 @@ export const colors={
   textSeondary: "#DDDDDD",
   white: '#fff',
   green:'#AACB73',
-  danger: '#F55050'  
+  danger: '#F55050',
+  modalBg: '#0000004d'  
 }
